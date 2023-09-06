@@ -98,6 +98,51 @@ app.MapDelete("/api/artists/{artistId}", (TunapianoDbContext db, int id) =>
 
 });
 
+//Get All Songs - #9
+app.MapGet("/api/songs", (TunapianoDbContext db) =>
+{
+    return db.Songs.ToList();
+});
+
+//Create a new Song - #18
+app.MapPost("/api/songs", (TunapianoDbContext db, Song song) =>
+{
+    db.Songs.Add(song);
+    db.SaveChanges();
+    return Results.Created($"/api/songs/song.id", song);
+
+});
+
+//Update existing Song - #2
+app.MapPut("/api/songs/{songId}", (TunapianoDbContext db, Song song, int id) =>
+{
+    Song songToUpdate = db.Songs.SingleOrDefault(s => s.Id == id);
+    if (songToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    songToUpdate.Title = song.Title;
+    songToUpdate.Artist_id = song.Artist_id;
+    songToUpdate.Album = song.Album;
+    songToUpdate.Length = song.Length;
+
+    db.SaveChanges();
+    return Results.Created($"/api/songs/song.id", song);
+
+});
+
+//Delete existing Song - #15
+app.MapDelete("/api/songs/{songId}", (TunapianoDbContext db, int id) =>
+{
+    var song = db.Songs.SingleOrDefault(s => s.Id == id);
+    if (song == null)
+    {
+        return Results.NotFound();
+    }
+    db.Songs.Remove(song);
+    db.SaveChanges();
+    return Results.NoContent();
+});
 
 
 app.Run();
