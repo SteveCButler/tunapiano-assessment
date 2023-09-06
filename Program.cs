@@ -1,7 +1,6 @@
-using tunapiano.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json.Serialization;
+using tunapiano.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -70,7 +69,7 @@ app.MapGet("/api/artists", (TunapianoDbContext db) =>
 app.MapPut("/api/artists/{artistId}", (TunapianoDbContext db, Artist artist, int id) =>
 {
     Artist artistToUpdate = db.Artists.SingleOrDefault(a => a.Id == id);
-    if(artistToUpdate == null)
+    if (artistToUpdate == null)
     {
         return Results.NotFound();
     }
@@ -144,6 +143,41 @@ app.MapDelete("/api/songs/{songId}", (TunapianoDbContext db, int id) =>
     return Results.NoContent();
 });
 
+// Create new Genre - #19
+app.MapPost("/api/genres", (TunapianoDbContext db, Genre genre) =>
+{
+    db.Genres.Add(genre);
+    db.SaveChanges();
+    return Results.Created($"/api/genre/genre.id", genre);
+});
+
+// Get All Genres - #10
+app.MapGet("/api/genres", (TunapianoDbContext db) =>
+{
+    return db.Genres.ToList();
+});
+
+// Update existing Genre
+app.MapPut("/api/genres/{genreId}", (TunapianoDbContext db, Genre genre, int id) =>
+{
+    Genre genreToUpdate = db.Genres.SingleOrDefault(gen => gen.Id == id);
+    if (genreToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    genreToUpdate.Description = genre.Description;
+    db.SaveChanges();
+    return Results.Created($"/api/genres/genre.id", genre);
+});
+
+//Delete existin Genre
+app.MapDelete("/api/genres/{genreId}", (TunapianoDbContext db, int id) =>
+{
+    var genre = db.Genres.SingleOrDefault(gen => gen.Id==id);
+    db.Genres.Remove(genre);
+    db.SaveChanges();
+    return Results.NoContent();
+});
 
 app.Run();
 
