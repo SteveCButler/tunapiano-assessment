@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using tunapiano.Models;
 
@@ -112,6 +113,22 @@ app.MapPost("/api/songs", (TunapianoDbContext db, Song song) =>
 
 });
 
+//Assign genre to song
+app.MapPost("/api/songGenre", (TunapianoDbContext db, int songId, int genreId) =>
+{
+    var song = db.Songs.SingleOrDefault(s => s.Id == songId);
+    var genre = db.Genres.SingleOrDefault(g => g.Id == genreId);
+
+    if (song.Genres == null)
+    {
+        song.Genres = new List<Genre>();
+    }
+    song.Genres.Add(genre);
+    db.SaveChanges();
+    return song;
+
+});
+
 //Update existing Song - #2
 app.MapPut("/api/songs/{songId}", (TunapianoDbContext db, Song song, int id) =>
 {
@@ -178,6 +195,22 @@ app.MapDelete("/api/genres/{genreId}", (TunapianoDbContext db, int id) =>
     db.SaveChanges();
     return Results.NoContent();
 });
+
+// Search Songs by Genre - #5
+app.MapGet("/api/songs/genre={genreId}", (TunapianoDbContext db, int id) =>
+{
+    var songs = db.Songs.Where(s => s.Id == id).Include(x => x.Genres).ToList();
+
+    
+    return songs;
+
+});
+
+
+
+
+
+
 
 app.Run();
 
