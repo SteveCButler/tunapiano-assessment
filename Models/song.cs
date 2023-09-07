@@ -11,10 +11,12 @@ public class Song
     [Required]
 
     public string Title { get; set; } = string.Empty;
-    public int Artist_id { get; set; }
+    public int ArtistId { get; set; }
+    public Artist Artist { get; set; }
+
     public string Album { get; set; } = string.Empty;
     public int Length { get; set; }
     public ICollection<Genre> Genres { get; set; }
-    public List<Artist> Artists { get; set;}
+    //public List<Artist> Artists { get; set;}
 
 }
