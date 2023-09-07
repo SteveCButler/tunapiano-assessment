@@ -50,6 +50,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
+//   ### ARTIST ENDPOINTS  ###  
 
 //Create New Artist - #1
 app.MapPost("/api/artists", (TunapianoDbContext db, Artist artist) =>
@@ -98,10 +99,42 @@ app.MapDelete("/api/artists/{artistId}", (TunapianoDbContext db, int id) =>
 
 });
 
+
+// Search Songs by Artist - #14
+app.MapGet("/api/songs/artist={artistId}", (TunapianoDbContext db, int id) =>
+{
+    var songs = db.Artists.Where(s => s.Id == id).Include(x => x.Songs).ToList();
+
+
+    return songs;
+
+});
+
+// Search songs by Artist Name
+app.MapGet("/api/songs/artistName={name}", (TunapianoDbContext db, string name) =>
+{
+    var songs = db.Artists.Where(s => s.Name.Contains(name)).Include(x => x.Songs).ToList();
+
+    return songs;
+
+});
+
+
+//   ### SONG ENDPOINTS  ###  
+
 //Get All Songs - #9
 app.MapGet("/api/songs", (TunapianoDbContext db) =>
 {
     return db.Songs.ToList();
+});
+
+//Get Song by ID - inlcude Artist and Genre - #
+app.MapGet("/api/songs/{songId}", (TunapianoDbContext db, int id) =>
+{
+
+    var song = db.Songs.Include(x => x.Artist).Include(x => x.Genres).FirstOrDefault(x => x.Id == id);
+    return song;
+   
 });
 
 //Create a new Song - #18
@@ -138,7 +171,7 @@ app.MapPut("/api/songs/{songId}", (TunapianoDbContext db, Song song, int id) =>
         return Results.NotFound();
     }
     songToUpdate.Title = song.Title;
-    songToUpdate.Artist_id = song.Artist_id;
+    songToUpdate.ArtistId = song.ArtistId;
     songToUpdate.Album = song.Album;
     songToUpdate.Length = song.Length;
 
@@ -159,6 +192,9 @@ app.MapDelete("/api/songs/{songId}", (TunapianoDbContext db, int id) =>
     db.SaveChanges();
     return Results.NoContent();
 });
+
+
+//   ### GENRE ENDPOINTS  ### 
 
 // Create new Genre - #19
 app.MapPost("/api/genres", (TunapianoDbContext db, Genre genre) =>
@@ -196,15 +232,20 @@ app.MapDelete("/api/genres/{genreId}", (TunapianoDbContext db, int id) =>
     return Results.NoContent();
 });
 
-// Search Songs by Genre - #5
-app.MapGet("/api/songs/genre={genreId}", (TunapianoDbContext db, int id) =>
-{
-    var songs = db.Songs.Where(s => s.Id == id).Include(x => x.Genres).ToList();
 
-    
-    return songs;
+
+// Search Songs by GenreId - #13
+app.MapGet("/api/genres/genre={genreId}", (TunapianoDbContext db, int id) =>
+{
+    var genreWithSongs = db.Genres.Where(s => s.Id == id).Include(x => x.Songs).ToList();
+
+
+    return genreWithSongs;
 
 });
+
+
+
 
 
 

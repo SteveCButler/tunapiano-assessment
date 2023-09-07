@@ -30,8 +30,8 @@ public class TunapianoDbContext : DbContext
         // seed data with Songs
         modelBuilder.Entity<Song>().HasData(new Song[]
         {
-        new Song {Id = 1, Album="Step Inside This House", Artist_id=1, Title="Step Inside This House", Length=280 },
-        new Song {Id = 2, Album="Real Time", Artist_id=2, Title="Walk Beside Me", Length=253},
+        new Song {Id = 1, Album="Step Inside This House", ArtistId=1, Title="Step Inside This House", Length=280 },
+        new Song {Id = 2, Album="Real Time", ArtistId=2, Title="Walk Beside Me", Length=253},
 
         });
 
