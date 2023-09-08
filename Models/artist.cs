@@ -16,5 +16,5 @@ public class Artist
     public string Bio { get; set; } = string.Empty;
 
     public List<Song> Songs { get; set; }
-    public List<Genre> Genres { get; set; }
+    
 }

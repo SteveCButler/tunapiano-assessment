@@ -17,6 +17,6 @@ public class Song
     public string Album { get; set; } = string.Empty;
     public int Length { get; set; }
     public ICollection<Genre> Genres { get; set; }
-    //public List<Artist> Artists { get; set;}
+    
 
 }
