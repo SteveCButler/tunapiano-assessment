@@ -52,6 +52,13 @@ app.UseHttpsRedirection();
 
 //   ### ARTIST ENDPOINTS  ###  
 
+//Get All Artists - #11
+app.MapGet("/api/artists", (TunapianoDbContext db) =>
+{
+    return db.Artists.ToList();
+
+});
+
 //Create New Artist - #1
 app.MapPost("/api/artists", (TunapianoDbContext db, Artist artist) =>
 {
@@ -60,12 +67,7 @@ app.MapPost("/api/artists", (TunapianoDbContext db, Artist artist) =>
     return Results.Created($"/api/artist/artist.Id", artist);
 });
 
-//Get All Artists - #11
-app.MapGet("/api/artists", (TunapianoDbContext db) =>
-{
-    return db.Artists.ToList();
 
-});
 
 //Update existing Artist - #4
 app.MapPut("/api/artists/{artistId}", (TunapianoDbContext db, Artist artist, int id) =>
@@ -104,9 +106,12 @@ app.MapDelete("/api/artists/{artistId}", (TunapianoDbContext db, int id) =>
 app.MapGet("/api/songs/artist={artistId}", (TunapianoDbContext db, int id) =>
 {
     var songs = db.Artists.Where(s => s.Id == id).Include(x => x.Songs).ToList();
+    if (songs == null)
+    {
+        return Results.NotFound();
+    }
 
-
-    return songs;
+    return Results.Ok(songs);
 
 });
 
@@ -114,8 +119,11 @@ app.MapGet("/api/songs/artist={artistId}", (TunapianoDbContext db, int id) =>
 app.MapGet("/api/songs/artistName={name}", (TunapianoDbContext db, string name) =>
 {
     var songs = db.Artists.Where(s => s.Name.Contains(name)).Include(x => x.Songs).ToList();
-
-    return songs;
+    if (songs == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(songs);
 
 });
 
@@ -133,7 +141,12 @@ app.MapGet("/api/songs/{songId}", (TunapianoDbContext db, int id) =>
 {
 
     var song = db.Songs.Include(x => x.Artist).Include(x => x.Genres).FirstOrDefault(x => x.Id == id);
-    return song;
+    if (song == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(song);
    
 });
 
@@ -196,6 +209,12 @@ app.MapDelete("/api/songs/{songId}", (TunapianoDbContext db, int id) =>
 
 //   ### GENRE ENDPOINTS  ### 
 
+// Get All Genres - #10
+app.MapGet("/api/genres", (TunapianoDbContext db) =>
+{
+    return db.Genres.ToList();
+});
+
 // Create new Genre - #19
 app.MapPost("/api/genres", (TunapianoDbContext db, Genre genre) =>
 {
@@ -204,11 +223,7 @@ app.MapPost("/api/genres", (TunapianoDbContext db, Genre genre) =>
     return Results.Created($"/api/genre/genre.id", genre);
 });
 
-// Get All Genres - #10
-app.MapGet("/api/genres", (TunapianoDbContext db) =>
-{
-    return db.Genres.ToList();
-});
+
 
 // Update existing Genre - #3
 app.MapPut("/api/genres/{genreId}", (TunapianoDbContext db, Genre genre, int id) =>
@@ -239,8 +254,13 @@ app.MapGet("/api/genres/genre={genreId}", (TunapianoDbContext db, int id) =>
 {
     var genreWithSongs = db.Genres.Where(s => s.Id == id).Include(x => x.Songs).ToList();
 
+    if (genreWithSongs == null)
+    {
+        return Results.NotFound();
+    }
 
-    return genreWithSongs;
+
+    return Results.Ok(genreWithSongs);
 
 });
 
